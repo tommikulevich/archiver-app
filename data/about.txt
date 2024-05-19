@@ -1,0 +1,16 @@
+Program “Archiwizator z szyfrowaniem” oferuje:
+-> Wybór wielu plików i/lub folderów do archiwizowania lub rozpakowywania (Ctrl+kliknięcie).
+-> Tworzenie archiwów:
+---> Możliwość wyboru formatu archiwum (.zip, .7z, .tar).
+---> Wybór poziomu kompresji (szybki, normalny, maksymalny).
+---> Opcja usunięcia plików źródłowych po utworzeniu archiwum.
+---> Szyfrowanie archiwum przy użyciu hasła (algorytm AES-256).
+---> Możliwość nazwania archiwum.
+---> Wybór miejsca zapisu archiwum.
+-> Rozpakowywanie archiwów:
+---> Opcja usuwania archiwów źródłowych po rozpakowaniu.
+---> Możliwość podania hasła do rozszyfrowania.
+---> Wybór miejsca, gdzie zostaną rozpakowane pliki.
+-> Interakcja z użytkownikiem:
+---> Pasek postępu pokazujący aktualny stan operacji, zarówno archiwizowania jak i rozpakowywania.
+---> Etykieta statusu informująca o przebiegu lub zakończeniu procesu.
