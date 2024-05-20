@@ -1,4 +1,5 @@
 import os
+import shutil
 import py7zr
 import zipfile
 import tarfile
@@ -64,11 +65,11 @@ class WorkerQt(QThread):
                             for root, _, files in os.walk(file):
                                 for filename in files:
                                     file_path = os.path.join(root, filename)
-                                    archive.write(file_path, os.path.relpath(file_path, self.files[0]))
+                                    archive.write(file_path, os.path.relpath(file_path, os.path.dirname(self.files[0])))
                                     processed_files += 1
                                     self.progress.emit(int(100 * processed_files / total_files))
                         else:
-                            archive.write(file, os.path.basename(file))
+                            archive.write(file, os.path.relpath(file, os.path.dirname(self.files[0])))
                             processed_files += 1
                             self.progress.emit(int(100 * processed_files / total_files))
             elif self.format == '.7z':
@@ -78,11 +79,11 @@ class WorkerQt(QThread):
                             for root, _, files in os.walk(file):
                                 for filename in files:
                                     file_path = os.path.join(root, filename)
-                                    archive.write(file_path, os.path.relpath(file_path, self.files[0]))
+                                    archive.write(file_path, os.path.relpath(file_path, os.path.dirname(self.files[0])))
                                     processed_files += 1
                                     self.progress.emit(int(100 * processed_files / total_files))
                         else:
-                            archive.writeall(file)
+                            archive.write(file, os.path.relpath(file, os.path.dirname(self.files[0])))
                             processed_files += 1
                             self.progress.emit(int(100 * processed_files / total_files))
             elif self.format == '.tar':
@@ -92,11 +93,11 @@ class WorkerQt(QThread):
                             for root, _, files in os.walk(file):
                                 for filename in files:
                                     file_path = os.path.join(root, filename)
-                                    archive.add(file_path, arcname=os.path.relpath(file_path, self.files[0]))
+                                    archive.add(file_path, os.path.relpath(file_path, os.path.dirname(self.files[0])))
                                     processed_files += 1
                                     self.progress.emit(int(100 * processed_files / total_files))
                         else:
-                            archive.add(file, os.path.basename(file))
+                            archive.add(file, os.path.relpath(file, os.path.dirname(self.files[0])))
                             processed_files += 1
                             self.progress.emit(int(100 * processed_files / total_files))
                         
@@ -105,10 +106,7 @@ class WorkerQt(QThread):
                     if os.path.isfile(file):
                         os.remove(file)
                     elif os.path.isdir(file):
-                        for root, _, files in os.walk(file):
-                            for filename in files:
-                                os.remove(os.path.join(root, filename))
-                        os.rmdir(file)
+                        shutil.rmtree(file)
         
             if self.password:
                 self.encrypt_file(archive_path)
