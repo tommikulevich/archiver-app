@@ -38,9 +38,9 @@ class WorkerGtk(GObject.GObject, threading.Thread):
                 self.archive_files()
             elif self.mode == 'unarchive':
                 self.unarchive_files()
-            self.emit('finished')
+            GObject.idle_add(self.emit, 'finished')
         except Exception as e:
-            self.emit('error', str(e))
+            GObject.idle_add(self.emit, 'error', str(e))
             return
        
     def count_files(self, files):
@@ -68,11 +68,11 @@ class WorkerGtk(GObject.GObject, threading.Thread):
                                     file_path = os.path.join(root, filename)
                                     archive.write(file_path, os.path.relpath(file_path, self.files[0]))
                                     processed_files += 1
-                                    self.emit('progress', int(100 * processed_files / total_files))
+                                    GObject.idle_add(self.emit, 'progress', int(100 * processed_files / total_files))
                         else:
                             archive.write(file, os.path.basename(file))
                             processed_files += 1
-                            self.emit('progress', int(100 * processed_files / total_files))
+                            GObject.idle_add(self.emit, 'progress', int(100 * processed_files / total_files))
             elif self.format == '.7z':
                 with py7zr.SevenZipFile(archive_path, 'w', filters=self.sevenzip_filters(self.compression_level)) as archive:
                     for file in self.files:
@@ -82,11 +82,11 @@ class WorkerGtk(GObject.GObject, threading.Thread):
                                     file_path = os.path.join(root, filename)
                                     archive.write(file_path, os.path.relpath(file_path, self.files[0]))
                                     processed_files += 1
-                                    self.emit('progress', int(100 * processed_files / total_files))
+                                    GObject.idle_add(self.emit, 'progress', int(100 * processed_files / total_files))
                         else:
                             archive.writeall(file)
                             processed_files += 1
-                            self.emit('progress', int(100 * processed_files / total_files))
+                            GObject.idle_add(self.emit, 'progress', int(100 * processed_files / total_files))
             elif self.format == '.tar':
                 with tarfile.open(archive_path, f'w:{self.tar_compression()}') as archive:
                     for file in self.files:
@@ -96,11 +96,11 @@ class WorkerGtk(GObject.GObject, threading.Thread):
                                     file_path = os.path.join(root, filename)
                                     archive.add(file_path, arcname=os.path.relpath(file_path, self.files[0]))
                                     processed_files += 1
-                                    self.emit('progress', int(100 * processed_files / total_files))
+                                    GObject.idle_add(self.emit, 'progress', int(100 * processed_files / total_files))
                         else:
                             archive.add(file, os.path.basename(file))
                             processed_files += 1
-                            self.emit('progress', int(100 * processed_files / total_files))
+                            GObject.idle_add(self.emit, 'progress', int(100 * processed_files / total_files))
                         
             if self.delete_files:
                 for file in self.files:
@@ -115,14 +115,14 @@ class WorkerGtk(GObject.GObject, threading.Thread):
             if self.password:
                 self.encrypt_file(archive_path)
         except Exception as e:
-            self.emit('error', str(e))
+            GObject.idle_add(self.emit, 'error', str(e))
 
     def unarchive_files(self):
         try:
             for archive in self.files:
                 if self.is_encrypted(archive):
                     if not self.password:
-                        self.emit('error', "Plik jest zaszyfrowany. Brak podanego hasła.")
+                        GObject.idle_add(self.emit, 'error', "Plik jest zaszyfrowany. Brak podanego hasła.")
                         return
                     decrypted_path = self.decrypt_file(archive)
                 else:
@@ -133,7 +133,7 @@ class WorkerGtk(GObject.GObject, threading.Thread):
                         total_files = len(archive_file.namelist())
                         for i, file in enumerate(archive_file.namelist(), 1):
                             archive_file.extract(file, self.destination)
-                            self.emit('progress', int(100 * i / total_files))
+                            GObject.idle_add(self.emit, 'progress', int(100 * i / total_files))
                 elif archive.endswith('.7z'):
                     with py7zr.SevenZipFile(decrypted_path, mode='r') as archive_file:
                         archive_content = archive_file.getnames()
@@ -141,29 +141,29 @@ class WorkerGtk(GObject.GObject, threading.Thread):
                         for i, file in enumerate(archive_content, 1):
                             archive_file.reset()
                             archive_file.extract(targets=[file], path=self.destination)
-                            self.emit('progress', int(100 * i / total_files))
+                            GObject.idle_add(self.emit, 'progress', int(100 * i / total_files))
                 elif archive.endswith(('.tar', '.tar.gz', '.tar.bz2', '.tar.xz')):
                     with tarfile.open(decrypted_path, 'r:*') as archive_file:
                         members = archive_file.getmembers()
                         total_files = len(members)
                         for i, file in enumerate(members, 1):
                             archive_file.extract(file, self.destination)
-                            self.emit('progress', int(100 * i / total_files))
+                            GObject.idle_add(self.emit, 'progress', int(100 * i / total_files))
 
                 if decrypted_path != archive:
                     os.remove(decrypted_path)
                     
-                self.emit('progress', int(100 * (self.files.index(archive) + 1) / len(self.files)))
+                GObject.idle_add(self.emit, 'progress', int(100 * (self.files.index(archive) + 1) / len(self.files)))
 
                 if self.delete_files:
                     os.remove(archive)
         except Exception as e:
-            self.emit('error', str(e))
+            GObject.idle_add(self.emit, 'error', str(e))
 
     def is_encrypted(self, filepath):
         try:
             with open(filepath, 'rb') as file:
-                header = file.read(16)
+                header = file.read(9)
             return header == b'ENCRYPTED'
         except Exception:
             return False
@@ -182,7 +182,7 @@ class WorkerGtk(GObject.GObject, threading.Thread):
     def decrypt_file(self, filepath):
         try:
             with open(filepath, 'rb') as file:
-                header = file.read(16)
+                header = file.read(9)
                 if header != b'ENCRYPTED':
                     raise ValueError("Niepoprawny nagłówek pliku szyfrowania.")
                 salt = file.read(16)

@@ -78,6 +78,8 @@ class UnarchiveWindowQt(QDialog):
             return
         
         # Run worker
+        self.startButton.setEnabled(False)
+        self.statusLabel.setText("Status: Przetwarzanie...")
         self.worker = WorkerQt(
             mode='unarchive',
             files=self.selected_files,
@@ -97,12 +99,12 @@ class UnarchiveWindowQt(QDialog):
         QMessageBox.critical(self, "Błąd", message)
         self.progressBar.setValue(0)
         self.statusLabel.setText("Status: Błąd")
+        self.startButton.setEnabled(True)
 
     def taskCompleted(self):
-        if self.progressBar.value() != 100:
-            QMessageBox.warning(self, "Zakończono", "Operacja zakończona z błędami.")
-        else:
+        if self.progressBar.value() == 100:
             QMessageBox.information(self, "Zakończono", "Operacja zakończona sukcesem.")
         
         self.progressBar.setValue(0)
-        self.statusLabel.setText("Status: Zakończono")
+        self.statusLabel.setText("Status: Oczekiwanie na start")
+        self.startButton.setEnabled(True)

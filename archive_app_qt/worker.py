@@ -162,7 +162,7 @@ class WorkerQt(QThread):
     def is_encrypted(self, filepath):
         try:
             with open(filepath, 'rb') as file:
-                header = file.read(16)
+                header = file.read(9)
             return header == b'ENCRYPTED'
         except Exception:
             return False
@@ -181,7 +181,7 @@ class WorkerQt(QThread):
     def decrypt_file(self, filepath):
         try:
             with open(filepath, 'rb') as file:
-                header = file.read(16)
+                header = file.read(9)
                 if header != b'ENCRYPTED':
                     raise ValueError("Niepoprawny nagłówek pliku szyfrowania.")
                 salt = file.read(16)

@@ -191,6 +191,8 @@ class ArchiveWindowGtk(Gtk.Window):
             return
 
         # Run worker
+        self.button_start.set_sensitive(False)
+        self.status_label.set_text("Status: Przetwarzanie...")
         self.worker = WorkerGtk(
             mode='archive',
             files=self.selected_files,
@@ -223,20 +225,10 @@ class ArchiveWindowGtk(Gtk.Window):
         dialog.destroy()
         self.progress_bar.set_fraction(0)
         self.status_label.set_text("Status: Błąd")
+        self.button_start.set_sensitive(True)
 
     def task_completed(self, worker):
-        if self.progress_bar.get_fraction() != 1.0:
-            dialog = Gtk.MessageDialog(
-                transient_for=self,
-                flags=0,
-                message_type=Gtk.MessageType.WARNING,
-                buttons=Gtk.ButtonsType.OK,
-                text="Zakończono",
-            )
-            dialog.format_secondary_text("Operacja zakończona z błędami.")
-            dialog.run()
-            dialog.destroy()
-        else:
+        if int(self.progress_bar.get_fraction() * 100) == 100:
             dialog = Gtk.MessageDialog(
                 transient_for=self,
                 flags=0,
@@ -249,5 +241,7 @@ class ArchiveWindowGtk(Gtk.Window):
             dialog.destroy()
 
         self.progress_bar.set_fraction(0)
-        self.status_label.set_text("Status: Zakończono")
+        self.progress_bar.set_text("0%")
+        self.status_label.set_text("Status: Oczekiwanie na start")
+        self.button_start.set_sensitive(True)
         
