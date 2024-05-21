@@ -131,8 +131,6 @@ class WorkerQt(QThread):
         # Unarchive main function
         try:
             for archive in self.files:
-                folder_path = self.create_unique_folder(self.destination, archive)
-                
                 if self.is_encrypted(archive):
                     if not self.password:
                         self.error.emit("Plik jest zaszyfrowany. Brak podanego hasła.")
@@ -140,6 +138,8 @@ class WorkerQt(QThread):
                     decrypted_path = self.decrypt_file(archive)
                 else:
                     decrypted_path = archive
+                    
+                folder_path = self.create_unique_folder(self.destination, archive)
                     
                 if archive.endswith('.zip'):
                     with zipfile.ZipFile(decrypted_path, 'r') as archive_file:

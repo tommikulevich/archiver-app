@@ -132,8 +132,6 @@ class WorkerGtk(GObject.GObject, threading.Thread):
     def unarchive_files(self):
         try:
             for archive in self.files:
-                folder_path = self.create_unique_folder(self.destination, archive)
-                
                 if self.is_encrypted(archive):
                     if not self.password:
                         GObject.idle_add(self.emit, 'error', "Plik jest zaszyfrowany. Brak podanego hasła.")
@@ -141,6 +139,8 @@ class WorkerGtk(GObject.GObject, threading.Thread):
                     decrypted_path = self.decrypt_file(archive)
                 else:
                     decrypted_path = archive
+                    
+                folder_path = self.create_unique_folder(self.destination, archive)
                     
                 if archive.endswith('.zip'):
                     with zipfile.ZipFile(decrypted_path, 'r') as archive_file:
