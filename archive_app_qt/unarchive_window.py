@@ -73,10 +73,6 @@ class UnarchiveWindowQt(QDialog):
             QMessageBox.warning(self, "Błąd", "Nie wybrano folderu docelowego.")
             return
         
-        if any(os.listdir(destination)):
-            QMessageBox.warning(self, "Błąd", f"Folder docelowy musi być pusty!")
-            return
-        
         # Run worker
         self.startButton.setEnabled(False)
         self.statusLabel.setText("Status: Przetwarzanie...")

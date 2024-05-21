@@ -95,19 +95,6 @@ class UnarchiveWindowGtk(Gtk.Window):
             dialog.run()
             dialog.destroy()
             return
-        
-        if any(os.listdir(destination)):
-            dialog = Gtk.MessageDialog(
-                transient_for=self,
-                flags=0,
-                message_type=Gtk.MessageType.WARNING,
-                buttons=Gtk.ButtonsType.OK,
-                text="Błąd",
-            )
-            dialog.format_secondary_text("Folder docelowy musi być pusty!")
-            dialog.run()
-            dialog.destroy()
-            return
 
         # Run worker
         self.button_start.set_sensitive(False)

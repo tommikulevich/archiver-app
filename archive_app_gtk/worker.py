@@ -53,6 +53,20 @@ class WorkerGtk(GObject.GObject, threading.Thread):
             else:
                 count += 1
         return count
+    
+    def create_unique_folder(self, directory, archive_name):
+        archive_base = os.path.splitext(os.path.basename(archive_name))[0]
+        new_directory_base = os.path.join(directory, archive_base)
+        new_directory = new_directory_base
+        index = 1
+        
+        while os.path.exists(new_directory):
+            new_directory = f"{new_directory_base}_{index}"
+            index += 1
+        
+        os.makedirs(new_directory, exist_ok=True)
+        
+        return new_directory
 
     def archive_files(self):
         archive_path = os.path.join(self.destination, self.archive_name + self.format)
@@ -118,6 +132,8 @@ class WorkerGtk(GObject.GObject, threading.Thread):
     def unarchive_files(self):
         try:
             for archive in self.files:
+                folder_path = self.create_unique_folder(self.destination, archive)
+                
                 if self.is_encrypted(archive):
                     if not self.password:
                         GObject.idle_add(self.emit, 'error', "Plik jest zaszyfrowany. Brak podanego hasła.")
@@ -130,7 +146,7 @@ class WorkerGtk(GObject.GObject, threading.Thread):
                     with zipfile.ZipFile(decrypted_path, 'r') as archive_file:
                         total_files = len(archive_file.namelist())
                         for i, file in enumerate(archive_file.namelist(), 1):
-                            archive_file.extract(file, self.destination)
+                            archive_file.extract(file, folder_path)
                             GObject.idle_add(self.emit, 'progress', int(100 * i / total_files))
                 elif archive.endswith('.7z'):
                     with py7zr.SevenZipFile(decrypted_path, mode='r') as archive_file:
@@ -138,14 +154,14 @@ class WorkerGtk(GObject.GObject, threading.Thread):
                         total_files = len(archive_content)
                         for i, file in enumerate(archive_content, 1):
                             archive_file.reset()
-                            archive_file.extract(targets=[file], path=self.destination)
+                            archive_file.extract(targets=[file], path=folder_path)
                             GObject.idle_add(self.emit, 'progress', int(100 * i / total_files))
                 elif archive.endswith(('.tar', '.tar.gz', '.tar.bz2', '.tar.xz')):
                     with tarfile.open(decrypted_path, 'r:*') as archive_file:
                         members = archive_file.getmembers()
                         total_files = len(members)
                         for i, file in enumerate(members, 1):
-                            archive_file.extract(file, self.destination)
+                            archive_file.extract(file, folder_path)
                             GObject.idle_add(self.emit, 'progress', int(100 * i / total_files))
 
                 if decrypted_path != archive:
