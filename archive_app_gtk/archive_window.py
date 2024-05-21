@@ -119,8 +119,11 @@ class ArchiveWindowGtk(Gtk.Window):
                 transient_for=self,
                 flags=0,
                 message_type=Gtk.MessageType.QUESTION,
-                buttons=Gtk.ButtonsType.YES_NO,
                 text="Ostrzeżenie",
+            )
+            dialog.add_buttons(
+                "Tak", Gtk.ResponseType.YES,
+                "Nie", Gtk.ResponseType.NO
             )
             dialog.format_secondary_text("Brak hasła. Czy kontynuować bez szyfrowania?")
             response = dialog.run()
