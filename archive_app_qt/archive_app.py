@@ -12,7 +12,8 @@ class ArchiveAppQt(QMainWindow):
         # Some window initialization
         super().__init__()
         self.setWindowTitle('Archiwizator z szyfrowaniem')
-        self.setGeometry(300, 300, 600, 400)
+        self.setGeometry(300, 300, 1200, 800)
+        self.setMinimumSize(1200, 800)
         
         # Menu bar with "Information"
         mainMenu = self.menuBar()
@@ -66,7 +67,7 @@ class ArchiveAppQt(QMainWindow):
         
         about = "Archiwizator z szyfrowaniem."
         if os.path.exists(about_filename):
-            with open(about_filename, 'r') as file:
+            with open(about_filename, 'r', encoding="utf-8") as file:
                 about = file.read()
             
         QMessageBox.about(self, "Opis aplikacji", about)

@@ -47,7 +47,7 @@ class ArchiveAppGtk(Gtk.Window):
         
         about = "Archiwizator z szyfrowaniem."
         if os.path.exists(about_filename):
-            with open(about_filename, 'r') as file:
+            with open(about_filename, 'r', encoding="utf-8") as file:
                 about = file.read()
         
         about_dialog = Gtk.MessageDialog(
