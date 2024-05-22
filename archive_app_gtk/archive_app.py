@@ -107,8 +107,8 @@ class ArchiveAppGtk(Gtk.Window):
         
         # Check archive extensions
         allowed_extensions = {".zip", ".7z", ".tar", ".tar.gz", ".tar.bz2", ".tar.xz"}
-        extensions = {file.split('.')[-1].lower() for file in selected_files}
-        if len(extensions) != 1 or f".{extensions.pop()}" not in allowed_extensions:
+        extensions = {"." + file.split('.')[-1].lower() for file in selected_files}
+        if not extensions.issubset(allowed_extensions):
             dialog = Gtk.MessageDialog(
                 transient_for=self, 
                 flags=0,
@@ -117,7 +117,7 @@ class ArchiveAppGtk(Gtk.Window):
                 text="Błąd"
             )
             dialog.format_secondary_text("Jeśli chcesz rozpakować pliki, "
-                "muszą one mieć to samo rozszerzenie: .zip, .7z lub .tar")
+                "muszą one mieć rozszerzenia: .zip, .7z lub .tar")
             dialog.run()
             dialog.destroy()
             return 

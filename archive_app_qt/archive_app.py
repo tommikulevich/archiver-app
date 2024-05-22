@@ -104,10 +104,10 @@ class ArchiveAppQt(QMainWindow):
         
         # Check archive extensions
         allowed_extensions = {".zip", ".7z", ".tar", ".tar.gz", ".tar.bz2", ".tar.xz"}
-        extensions = {file.split('.')[-1].lower() for file in selected_files}
-        if len(extensions) != 1 or f".{extensions.pop()}" not in allowed_extensions:
+        extensions = {"." + file.split('.')[-1].lower() for file in selected_files}
+        if not extensions.issubset(allowed_extensions):
             QMessageBox.warning(self, "Błąd", "Jeśli chcesz rozpakować pliki, "
-                "muszą one mieć to samo rozszerzenie: .zip, .7z lub .tar")
+                "muszą one mieć rozszerzenia: .zip, .7z lub .tar")
             return 
         
         # Open Unarchive window
