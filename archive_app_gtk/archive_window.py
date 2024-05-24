@@ -11,7 +11,7 @@ from archive_app_gtk.worker import WorkerGtk
 class ArchiveWindowGtk(Gtk.Window):
     def __init__(self, selected_files, parent=None):
         # Some window initialization
-        super().__init__(title="Zarchiwizuj pliki")
+        super().__init__(title="Archive files")
         self.selected_files = selected_files
         self.set_transient_for(parent)
         self.set_modal(True)
@@ -22,7 +22,7 @@ class ArchiveWindowGtk(Gtk.Window):
         self.add(vbox)
 
         # Archive format label and combo box
-        label_format = Gtk.Label(label="Format archiwum:")
+        label_format = Gtk.Label(label="Archive format:")
         label_format.set_xalign(0)
         vbox.pack_start(label_format, True, True, 0)
         
@@ -34,37 +34,37 @@ class ArchiveWindowGtk(Gtk.Window):
         vbox.pack_start(self.combo_format, True, True, 0)
 
         # Compression level label and combo box
-        label_compression = Gtk.Label(label="Poziom kompresji:")
+        label_compression = Gtk.Label(label="Compression level:")
         label_compression.set_xalign(0)
         vbox.pack_start(label_compression, True, True, 0)
 
         self.combo_compression = Gtk.ComboBoxText()
-        self.combo_compression.append_text("Szybki")
-        self.combo_compression.append_text("Normalny")
-        self.combo_compression.append_text("Maksymalny")
+        self.combo_compression.append_text("Fast")
+        self.combo_compression.append_text("Normal")
+        self.combo_compression.append_text("Maximum")
         self.combo_compression.set_active(0)
         vbox.pack_start(self.combo_compression, True, True, 0)
 
         # Delete files checkbox
-        self.check_delete_files = Gtk.CheckButton(label="Usuń pliki wejściowe po zakończeniu")
+        self.check_delete_files = Gtk.CheckButton(label="Delete input files after completion")
         vbox.pack_start(self.check_delete_files, True, True, 0)
 
         # Password
         self.entry_password = Gtk.Entry()
-        self.entry_password.set_placeholder_text("Hasło do szyfrowania (opcjonalne)")
+        self.entry_password.set_placeholder_text("Encryption password (optional)")
         self.entry_password.set_visibility(False)
         vbox.pack_start(self.entry_password, True, True, 0)
 
         # Archive name
         self.entry_archive_name = Gtk.Entry()
-        self.entry_archive_name.set_placeholder_text("Nazwa archiwum")
+        self.entry_archive_name.set_placeholder_text("Archive name")
         vbox.pack_start(self.entry_archive_name, True, True, 0)
 
         # Destination folder label and button
-        self.folder_label = Gtk.Label(label="Folder docelowy: Nie wybrano")
+        self.folder_label = Gtk.Label(label="Destination folder: None selected")
         self.folder_label.set_xalign(0)
         
-        button_choose_folder = Gtk.Button(label="Wybierz folder")
+        button_choose_folder = Gtk.Button(label="Choose folder")
         button_choose_folder.connect("clicked", self.choose_dest_folder, self.folder_label)
         vbox.pack_start(button_choose_folder, True, True, 0)
         vbox.pack_start(self.folder_label, True, True, 0)
@@ -82,7 +82,7 @@ class ArchiveWindowGtk(Gtk.Window):
         vbox.pack_start(self.progress_bar, True, True, 0)
 
         # Status label
-        self.status_label = Gtk.Label(label="Status: Oczekiwanie na start")
+        self.status_label = Gtk.Label(label="Status: Waiting to start")
         self.status_label.set_xalign(0)
         vbox.pack_start(self.status_label, True, True, 0)
 
@@ -91,18 +91,18 @@ class ArchiveWindowGtk(Gtk.Window):
     def choose_dest_folder(self, widget, label):
         # Choosing destination folder 
         dialog = Gtk.FileChooserDialog(
-            title="Wybierz folder docelowy",
+            title="Choose destination folder",
             parent=self,
             action=Gtk.FileChooserAction.SELECT_FOLDER,
         )
         dialog.add_buttons(
-            "Anuluj", Gtk.ResponseType.CANCEL,
-            "Wybierz", Gtk.ResponseType.OK
+            "Cancel", Gtk.ResponseType.CANCEL,
+            "Choose", Gtk.ResponseType.OK
         )
         
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
-            label.set_text(f"Folder docelowy: {dialog.get_filename()}")
+            label.set_text(f"Destination folder: {dialog.get_filename()}")
             
         dialog.destroy()
         
@@ -119,13 +119,13 @@ class ArchiveWindowGtk(Gtk.Window):
                 transient_for=self,
                 flags=0,
                 message_type=Gtk.MessageType.QUESTION,
-                text="Ostrzeżenie",
+                text="Warning",
             )
             dialog.add_buttons(
-                "Tak", Gtk.ResponseType.YES,
-                "Nie", Gtk.ResponseType.NO
+                "Yes", Gtk.ResponseType.YES,
+                "No", Gtk.ResponseType.NO
             )
-            dialog.format_secondary_text("Brak hasła. Czy kontynuować bez szyfrowania?")
+            dialog.format_secondary_text("No password. Continue without encryption?")
             response = dialog.run()
             dialog.destroy()
             if response == Gtk.ResponseType.NO:
@@ -139,9 +139,9 @@ class ArchiveWindowGtk(Gtk.Window):
                 flags=0,
                 message_type=Gtk.MessageType.WARNING,
                 buttons=Gtk.ButtonsType.OK,
-                text="Błąd",
+                text="Error",
             )
-            dialog.format_secondary_text("Nie wpisano nazwy archiwum.")
+            dialog.format_secondary_text("No archive name entered.")
             dialog.run()
             dialog.destroy()
             return
@@ -154,24 +154,24 @@ class ArchiveWindowGtk(Gtk.Window):
                 flags=0,
                 message_type=Gtk.MessageType.WARNING,
                 buttons=Gtk.ButtonsType.OK,
-                text="Błąd",
+                text="Error",
             )
-            dialog.format_secondary_text("Nazwa archiwum jest niedozwolona.")
+            dialog.format_secondary_text("This archive name is not allowed.")
             dialog.run()
             dialog.destroy()
             return
         
         # Check destination folder
-        destination = self.folder_label.get_text().replace("Folder docelowy: ", "")
-        if not destination or destination == "Nie wybrano":
+        destination = self.folder_label.get_text().replace("Destination folder: ", "")
+        if not destination or destination == "None selected":
             dialog = Gtk.MessageDialog(
                 transient_for=self,
                 flags=0,
                 message_type=Gtk.MessageType.WARNING,
                 buttons=Gtk.ButtonsType.OK,
-                text="Błąd",
+                text="Error",
             )
-            dialog.format_secondary_text("Nie wybrano folderu docelowego.")
+            dialog.format_secondary_text("Destination folder not selected.")
             dialog.run()
             dialog.destroy()
             return
@@ -185,17 +185,17 @@ class ArchiveWindowGtk(Gtk.Window):
                 flags=0,
                 message_type=Gtk.MessageType.WARNING,
                 buttons=Gtk.ButtonsType.OK,
-                text="Błąd",
+                text="Error",
             )
-            dialog.format_secondary_text(f"Plik o nazwie '{archive_filename}'"
-                                "już istnieje w folderze docelowym.")
+            dialog.format_secondary_text(f"File with name '{archive_filename}'"
+                                "already exists in destination folder.")
             dialog.run()
             dialog.destroy()
             return
 
         # Run worker
         self.button_start.set_sensitive(False)
-        self.status_label.set_text("Status: Przetwarzanie...")
+        self.status_label.set_text("Status: Processing...")
         self.worker = WorkerGtk(
             mode='archive',
             files=self.selected_files,
@@ -221,13 +221,13 @@ class ArchiveWindowGtk(Gtk.Window):
             flags=0,
             message_type=Gtk.MessageType.ERROR,
             buttons=Gtk.ButtonsType.OK,
-            text="Błąd",
+            text="Error",
         )
         dialog.format_secondary_text(message)
         dialog.run()
         dialog.destroy()
         self.progress_bar.set_fraction(0)
-        self.status_label.set_text("Status: Błąd")
+        self.status_label.set_text("Status: Error")
         self.button_start.set_sensitive(True)
 
     def task_completed(self, worker):
@@ -237,14 +237,14 @@ class ArchiveWindowGtk(Gtk.Window):
                 flags=0,
                 message_type=Gtk.MessageType.INFO,
                 buttons=Gtk.ButtonsType.OK,
-                text="Zakończono",
+                text="Completed",
             )
-            dialog.format_secondary_text("Operacja zakończona sukcesem.")
+            dialog.format_secondary_text("Operation completed successfully.")
             dialog.run()
             dialog.destroy()
 
         self.progress_bar.set_fraction(0)
         self.progress_bar.set_text("0%")
-        self.status_label.set_text("Status: Oczekiwanie na start")
+        self.status_label.set_text("Status: Waiting to start")
         self.button_start.set_sensitive(True)
         

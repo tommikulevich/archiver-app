@@ -134,7 +134,7 @@ class WorkerGtk(GObject.GObject, threading.Thread):
             for archive in self.files:
                 if self.is_encrypted(archive):
                     if not self.password:
-                        GObject.idle_add(self.emit, 'error', "Plik jest zaszyfrowany. Brak podanego hasła.")
+                        GObject.idle_add(self.emit, 'error', "The file is encrypted. No password provided.")
                         return
                     decrypted_path = self.decrypt_file(archive)
                 else:
@@ -198,7 +198,7 @@ class WorkerGtk(GObject.GObject, threading.Thread):
             with open(filepath, 'rb') as file:
                 header = file.read(9)
                 if header != b'ENCRYPTED':
-                    raise ValueError("Niepoprawny nagłówek pliku szyfrowania.")
+                    raise ValueError("Invalid encryption file header.")
                 salt = file.read(16)
                 nonce = file.read(12)
                 ct = file.read()
@@ -210,28 +210,28 @@ class WorkerGtk(GObject.GObject, threading.Thread):
                 file.write(data)
             return decrypted_path
         except InvalidTag:
-            raise ValueError("Niepoprawne hasło lub uszkodzone dane.")
+            raise ValueError("Incorrect password or corrupted data.")
     
     def compression_level_zip(self, level):
-        if level == 'Szybki':
+        if level == 'Fast':
             return zipfile.ZIP_DEFLATED
-        elif level == 'Maksymalny':
+        elif level == 'Maximum':
             return zipfile.ZIP_BZIP2
         
         return zipfile.ZIP_STORED
 
     def sevenzip_filters(self, level):
-        if level == 'Maksymalny':
+        if level == 'Maximum':
             return [{'id': py7zr.FILTER_LZMA2, 'preset': 9}]
-        elif level == 'Normalny':
+        elif level == 'Normal':
             return [{'id': py7zr.FILTER_LZMA2, 'preset': 5}]
         
         return [{'id': py7zr.FILTER_LZMA2, 'preset': 1}]
     
     def tar_compression(self):
-        if self.compression_level == 'Szybki':
+        if self.compression_level == 'Fast':
             return 'gz'
-        elif self.compression_level == 'Maksymalny':
+        elif self.compression_level == 'Maximum':
             return 'bz2'
         
         return ''

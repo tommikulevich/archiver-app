@@ -17,11 +17,6 @@ if GTK_AVAILABLE:
 
 def run_qt():
     app = QApplication(sys.argv)
-        
-    translator = QTranslator()
-    if translator.load(QLocale('pl_PL'), 'qtbase', '_', 
-            QLibraryInfo.location(QLibraryInfo.TranslationsPath)):
-        app.installTranslator(translator)
     
     archive_app = ArchiveAppQt()
     archive_app.show()
@@ -34,12 +29,12 @@ def run_gtk():
         win.show_all()
         Gtk.main()
     else:
-        print("GTK nie jest obsługiwany (należy doinstalować odpowiednie biblioteki).")
+        print("GTK is not supported (you must install the appropriate libraries).")
         sys.exit(1)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--gui', choices=['qt', 'gtk'], default='qt', help="Wybierz GUI: 'qt' or 'gtk'")
+    parser.add_argument('--gui', choices=['qt', 'gtk'], default='qt', help="Choose GUI: 'qt' or 'gtk'")
     args = parser.parse_args()
 
     if args.gui == 'qt':

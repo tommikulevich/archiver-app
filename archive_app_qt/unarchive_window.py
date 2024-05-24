@@ -13,23 +13,23 @@ class UnarchiveWindowQt(QDialog):
         super().__init__(parent)
         self.selected_files = selected_files
         
-        self.setWindowTitle('Rozpakuj pliki')
+        self.setWindowTitle('Unarchive files')
         self.setGeometry(350, 350, 450, 250)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
         
         layout = QVBoxLayout()
         
         # Delete files checkbox
-        self.deleteFilesCheckbox = QCheckBox("Usuń pliki wejściowe po zakończeniu")
+        self.deleteFilesCheckbox = QCheckBox("Delete input files after completion")
         
         # Password
         self.passwordInput = QLineEdit()
-        self.passwordInput.setPlaceholderText("Hasło do rozszyfrowania (opcjonalne)")
+        self.passwordInput.setPlaceholderText("Decryption password (optional).")
         self.passwordInput.setEchoMode(QLineEdit.Password)
         
         # Destination folder label and button
-        self.destinationFolderLabel = QLabel("Folder docelowy: Nie wybrano")
-        chooseDestFolderBtn = QPushButton("Wybierz folder")
+        self.destinationFolderLabel = QLabel("Destination folder: None selected")
+        chooseDestFolderBtn = QPushButton("Choose folder")
         chooseDestFolderBtn.clicked.connect(self.chooseDestFolder)
                 
         # Start button
@@ -43,7 +43,7 @@ class UnarchiveWindowQt(QDialog):
         self.progressBar.setValue(0)
         
         # Status label
-        self.statusLabel = QLabel("Status: Oczekiwanie na start")
+        self.statusLabel = QLabel("Status: Waiting to start")
         
         # Some layout stuff
         layout.addWidget(self.deleteFilesCheckbox)
@@ -58,9 +58,9 @@ class UnarchiveWindowQt(QDialog):
 
     def chooseDestFolder(self):
         # Choosing destination folder
-        folder = QFileDialog.getExistingDirectory(self, "Wybierz folder docelowy")
+        folder = QFileDialog.getExistingDirectory(self, "Choose destination folder")
         if folder:
-            self.destinationFolderLabel.setText(f"Folder docelowy: {folder}")
+            self.destinationFolderLabel.setText(f"Destination folder: {folder}")
 
     def startUnarchiving(self):
         # Unachiving process: get all params
@@ -68,14 +68,14 @@ class UnarchiveWindowQt(QDialog):
         password = self.passwordInput.text()
         
         # Check destination folder
-        destination = self.destinationFolderLabel.text().replace("Folder docelowy: ", "")
-        if not destination or destination == "Nie wybrano":
-            QMessageBox.warning(self, "Błąd", "Nie wybrano folderu docelowego.")
+        destination = self.destinationFolderLabel.text().replace("Destination folder: ", "")
+        if not destination or destination == "None selected":
+            QMessageBox.warning(self, "Error", "Destination folder not selected.")
             return
         
         # Run worker
         self.startButton.setEnabled(False)
-        self.statusLabel.setText("Status: Przetwarzanie...")
+        self.statusLabel.setText("Status: Processing...")
         self.worker = WorkerQt(
             mode='unarchive',
             files=self.selected_files,
@@ -92,15 +92,15 @@ class UnarchiveWindowQt(QDialog):
         self.worker.start()
 
     def showError(self, message):
-        QMessageBox.critical(self, "Błąd", message)
+        QMessageBox.critical(self, "Error", message)
         self.progressBar.setValue(0)
-        self.statusLabel.setText("Status: Błąd")
+        self.statusLabel.setText("Status: Error")
         self.startButton.setEnabled(True)
 
     def taskCompleted(self):
         if self.progressBar.value() == 100:
-            QMessageBox.information(self, "Zakończono", "Operacja zakończona sukcesem.")
+            QMessageBox.information(self, "Completed", "Operation completed successfully.")
         
         self.progressBar.setValue(0)
-        self.statusLabel.setText("Status: Oczekiwanie na start")
+        self.statusLabel.setText("Status: Waiting to start")
         self.startButton.setEnabled(True)

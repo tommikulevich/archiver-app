@@ -10,7 +10,7 @@ from archive_app_gtk.unarchive_window import UnarchiveWindowGtk
 class ArchiveAppGtk(Gtk.Window):
     def __init__(self):
         # Some window initialization
-        super().__init__(title='Archiwizator z szyfrowaniem')
+        super().__init__(title='Archiver with Encryption')
         self.set_size_request(600, 400)
         self.set_border_width(10)
         
@@ -19,7 +19,7 @@ class ArchiveAppGtk(Gtk.Window):
 
         # Menu bar with "Information"
         mb = Gtk.MenuBar()
-        aboutitem = Gtk.MenuItem.new_with_label("Informacja")
+        aboutitem = Gtk.MenuItem.new_with_label("About")
         aboutitem.connect("button-press-event", self.on_about_activated)
         mb.append(aboutitem)
         box_outer.pack_start(mb, False, False, 0)
@@ -33,11 +33,11 @@ class ArchiveAppGtk(Gtk.Window):
         button_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         box_outer.pack_start(button_box, False, False, 0)
 
-        btn_archive = Gtk.Button.new_with_label("Zarchiwizować")
+        btn_archive = Gtk.Button.new_with_label("Archive")
         btn_archive.connect("clicked", self.on_archive_clicked)
         button_box.pack_start(btn_archive, False, False, 0)
         
-        btn_unarchive = Gtk.Button.new_with_label("Rozpakować")
+        btn_unarchive = Gtk.Button.new_with_label("Unarchive")
         btn_unarchive.connect("clicked", self.on_unarchive_clicked)
         button_box.pack_start(btn_unarchive, False, False, 0)
     
@@ -45,7 +45,7 @@ class ArchiveAppGtk(Gtk.Window):
         # Show info about application from file
         about_filename = "data/about.txt"
         
-        about = "Archiwizator z szyfrowaniem."
+        about = "Archiver with Encryption."
         if os.path.exists(about_filename):
             with open(about_filename, 'r', encoding="utf-8") as file:
                 about = file.read()
@@ -55,7 +55,7 @@ class ArchiveAppGtk(Gtk.Window):
             flags=0,
             message_type=Gtk.MessageType.INFO, 
             buttons=Gtk.ButtonsType.OK, 
-            text="Opis aplikacji"
+            text="App Desctiption"
         )
         about_dialog.format_secondary_text(about)
         about_dialog.run()
@@ -73,9 +73,9 @@ class ArchiveAppGtk(Gtk.Window):
                 flags=0,
                 message_type=Gtk.MessageType.WARNING, 
                 buttons=Gtk.ButtonsType.OK,
-                text="Błąd"
+                text="Error"
             )
-            dialog.format_secondary_text("Nie wybrano plików.")
+            dialog.format_secondary_text("No files selected.")
             dialog.run()
             dialog.destroy()
             return
@@ -98,9 +98,9 @@ class ArchiveAppGtk(Gtk.Window):
                 flags=0,
                 message_type=Gtk.MessageType.WARNING, 
                 buttons=Gtk.ButtonsType.OK,
-                text="Błąd"
+                text="Error"
             )
-            dialog.format_secondary_text("Nie wybrano plików.")
+            dialog.format_secondary_text("No files selected.")
             dialog.run()
             dialog.destroy()
             return
@@ -114,10 +114,10 @@ class ArchiveAppGtk(Gtk.Window):
                 flags=0,
                 message_type=Gtk.MessageType.WARNING, 
                 buttons=Gtk.ButtonsType.OK,
-                text="Błąd"
+                text="Error"
             )
-            dialog.format_secondary_text("Jeśli chcesz rozpakować pliki, "
-                "muszą one mieć rozszerzenia: .zip, .7z lub .tar")
+            dialog.format_secondary_text("If you want to unpack files, "
+                "they must have extensions: .zip, .7z lub .tar")
             dialog.run()
             dialog.destroy()
             return 

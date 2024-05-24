@@ -11,13 +11,13 @@ class ArchiveAppQt(QMainWindow):
     def __init__(self):
         # Some window initialization
         super().__init__()
-        self.setWindowTitle('Archiwizator z szyfrowaniem')
+        self.setWindowTitle('Archiver with Encryption')
         self.setGeometry(300, 300, 1200, 800)
         self.setMinimumSize(1200, 800)
         
         # Menu bar with "Information"
         mainMenu = self.menuBar()
-        aboutAction = QAction('Informacja', self)
+        aboutAction = QAction('About', self)
         aboutAction.triggered.connect(self.aboutDialog)
         mainMenu.addAction(aboutAction)
         
@@ -37,10 +37,10 @@ class ArchiveAppQt(QMainWindow):
         self.fileScrollArea.setWidgetResizable(True)
         
         # Main buttons
-        btnArchive = QPushButton('Zarchiwizować', self)
+        btnArchive = QPushButton('Archive', self)
         btnArchive.clicked.connect(self.openArchiveWindow)
         
-        btnUnarchive = QPushButton('Rozpakować', self)
+        btnUnarchive = QPushButton('Unarchive', self)
         btnUnarchive.clicked.connect(self.openUnarchiveWindow)
         
         # Some layout stuff
@@ -65,12 +65,12 @@ class ArchiveAppQt(QMainWindow):
         # Show info about application from file
         about_filename = "data/about.txt"
         
-        about = "Archiwizator z szyfrowaniem."
+        about = "Archiver with Encryption."
         if os.path.exists(about_filename):
             with open(about_filename, 'r', encoding="utf-8") as file:
                 about = file.read()
             
-        QMessageBox.about(self, "Opis aplikacji", about)
+        QMessageBox.about(self, "App Desctiption", about)
 
     def openArchiveWindow(self):
         # Get selected files
@@ -82,7 +82,7 @@ class ArchiveAppQt(QMainWindow):
         
         # Check if any file was selected
         if not selected_files:
-            QMessageBox.warning(self, "Błąd", "Nie wybrano plików.")
+            QMessageBox.warning(self, "Error", "No files selected.")
             return
         
         # Open Archive window
@@ -99,15 +99,15 @@ class ArchiveAppQt(QMainWindow):
         
         # Check if any file was selected
         if not selected_files:
-            QMessageBox.warning(self, "Błąd", "Nie wybrano archiwum.")
+            QMessageBox.warning(self, "Error", "No files selected.")
             return
         
         # Check archive extensions
         allowed_extensions = {".zip", ".7z", ".tar", ".tar.gz", ".tar.bz2", ".tar.xz"}
         extensions = {"." + file.split('.')[-1].lower() for file in selected_files}
         if not extensions.issubset(allowed_extensions):
-            QMessageBox.warning(self, "Błąd", "Jeśli chcesz rozpakować pliki, "
-                "muszą one mieć rozszerzenia: .zip, .7z lub .tar")
+            QMessageBox.warning(self, "Error", "If you want to unpack files, "
+                "they must have extensions: .zip, .7z lub .tar")
             return 
         
         # Open Unarchive window
