@@ -2,9 +2,10 @@ import os
 import re
 import platform
 import PyQt5.QtCore as QtCore
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QVBoxLayout, QFileDialog, QPushButton, QLabel, 
                              QComboBox, QCheckBox, QLineEdit, QProgressBar, 
-                             QMessageBox, QDialog)
+                             QMessageBox, QDialog, QApplication, QStyle)
 
 from archive_app_qt.worker import WorkerQt
 
@@ -13,6 +14,7 @@ class ArchiveWindowQt(QDialog):
     def __init__(self, parent, selected_files):
         # Some window initialization
         super().__init__(parent)
+        self.setWindowIcon(QIcon(QApplication.instance().style().standardPixmap(QStyle.SP_FileDialogStart)))
         self.selected_files = selected_files
         self.setWindowTitle('Archive the files')
         self.setGeometry(350, 350, 450, 300)

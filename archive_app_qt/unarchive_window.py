@@ -1,6 +1,6 @@
-import os
 import PyQt5.QtCore as QtCore
-from PyQt5.QtWidgets import (QVBoxLayout,
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import (QVBoxLayout, QApplication, QStyle,
                              QFileDialog, QPushButton, QLabel, QCheckBox, 
                              QLineEdit, QProgressBar, QMessageBox, QDialog)
 
@@ -12,7 +12,7 @@ class UnarchiveWindowQt(QDialog):
         # Some window initialization
         super().__init__(parent)
         self.selected_files = selected_files
-        
+        self.setWindowIcon(QIcon(QApplication.instance().style().standardPixmap(QStyle.SP_FileDialogEnd)))
         self.setWindowTitle('Unarchive files')
         self.setGeometry(350, 350, 450, 250)
         self.setWindowModality(QtCore.Qt.ApplicationModal)

@@ -1,6 +1,7 @@
 import os
 import PyQt5.QtCore as QtCore
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QAction, QWidget, QVBoxLayout,
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QAction, QWidget, QVBoxLayout, QStyle,
                              QPushButton, QMessageBox, QTreeView, QFileSystemModel, QScrollArea)
 
 from archive_app_qt.archive_window import ArchiveWindowQt
@@ -11,6 +12,7 @@ class ArchiveAppQt(QMainWindow):
     def __init__(self):
         # Some window initialization
         super().__init__()
+        self.setWindowIcon(QIcon(QApplication.instance().style().standardPixmap(QStyle.SP_FileDialogContentsView)))
         self.setWindowTitle('Archiver with Encryption')
         self.setGeometry(300, 300, 1200, 800)
         self.setMinimumSize(1200, 800)
